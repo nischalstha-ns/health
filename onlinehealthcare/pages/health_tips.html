@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Health Tips: Diseases, Symptoms, and Cures</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+    }
+    header {
+      background-color: #28a745;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .container {
+      width: 80%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .search-bar {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .search-bar input {
+      padding: 10px;
+      width: 70%;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .disease-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .disease {
+      background-color: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+    .disease:hover {
+      transform: scale(1.02);
+    }
+    .accordion {
+      background-color: #f1f1f1;
+      padding: 15px;
+      cursor: pointer;
+      text-align: left;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      width: 100%;
+      font-weight: bold;
+    }
+    .panel {
+      padding: 0 15px;
+      display: none;
+      background-color: #f9f9f9;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Health Tips: Diseases, Symptoms, Solutions, and Prevention</h1>
+  </header>
+
+  <div class="container">
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="Search disease, symptom, or solution..." onkeyup="searchDiseases()">
+    </div>
+
+    <div class="disease-list" id="diseaseList">
+      <!-- Example diseases - will expand to 1000+ -->
+      <div class="disease">
+        <button class="accordion">Common Cold</button>
+        <div class="panel">
+          <p><strong>Symptoms:</strong> Runny nose, sore throat, cough, fatigue</p>
+          <p><strong>Solution:</strong> Rest, hydration, over-the-counter meds</p>
+          <p><strong>Prevention:</strong> Handwashing, avoiding sick people</p>
+        </div>
+      </div>
+      <div class="disease">
+        <button class="accordion">Diabetes</button>
+        <div class="panel">
+          <p><strong>Symptoms:</strong> Frequent urination, increased thirst, fatigue</p>
+          <p><strong>Solution:</strong> Medication, healthy diet, regular exercise</p>
+          <p><strong>Prevention:</strong> Weight management, regular check-ups</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.accordion').forEach(button => {
+      button.addEventListener('click', () => {
+        const panel = button.nextElementSibling;
+        panel.style.display = panel.style.display === "block" ? "none" : "block";
+      });
+    });
+
+    function searchDiseases() {
+      const input = document.getElementById('search').value.toLowerCase();
+      const diseases = document.querySelectorAll('.disease');
+      diseases.forEach(disease => {
+        const textContent = disease.innerText.toLowerCase();
+        disease.style.display = textContent.includes(input) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

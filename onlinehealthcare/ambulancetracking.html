@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance Tracking System</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+        }
+        
+        header {
+            background: #007bff;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+        }
+        
+        #map {
+            height: 90vh;
+            width: 100%;
+        }
+        
+        .location-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #28a745;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Ambulance Tracking System</h1>
+    </header>
+
+    <button class="location-btn" onclick="getLocation()">Track Ambulance</button>
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let marker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 0, lng: 0 },
+                zoom: 15
+            });
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(showPosition, showError, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            const { latitude, longitude } = position.coords;
+            const location = { lat: latitude, lng: longitude };
+            saveLocation(latitude, longitude);
+
+            if (marker) {
+                marker.setPosition(location);
+            } else {
+                marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    title: "Ambulance Location"
+                });
+            }
+            map.setCenter(location);
+        }
+
+        function saveLocation(lat, lng) {
+            fetch('save_location.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ latitude: lat, longitude: lng })
+            })
+            .then(response => response.text())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error saving location:', error));
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+    </script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+</body>
+</html>
+
+<!-- save_location.php -->
+<?php
+    $conn = new mysqli('localhost', 'root', 'your_password', 'ambulance_tracking');
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $data = json_decode(file_get_contents("php://input"));
+
+    if (isset($data->latitude) && isset($data->longitude)) {
+        $latitude = $conn->real_escape_string($data->latitude);
+        $longitude = $conn->real_escape_string($data->longitude);
+
+        $sql = "INSERT INTO locations (latitude, longitude, timestamp) VALUES ('$latitude', '$longitude', NOW())";
+        
+        if ($conn->query($sql) === TRUE) {
+            echo "Location saved successfully";
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    }
+
+    $conn->close();
+?>
+
+<!-- MySQL Setup -->
+<!--
+CREATE DATABASE ambulance_tracking;
+
+USE ambulance_tracking;
+
+CREATE TABLE locations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    latitude DECIMAL(10, 8),
+    longitude DECIMAL(11, 8),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+-->

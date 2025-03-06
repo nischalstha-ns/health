@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebRTC Voice Call Example</title>
+</head>
+<body>
+  <h2>Start a Voice Call</h2>
+  <button id="startCall">Start Call</button>
+  <audio id="localAudio" autoplay muted></audio>
+  <audio id="remoteAudio" autoplay></audio>
+
+  <script>
+    let localStream;
+    let remoteStream;
+    let peerConnection;
+
+    const startCallButton = document.getElementById('startCall');
+    const localAudio = document.getElementById('localAudio');
+    const remoteAudio = document.getElementById('remoteAudio');
+
+    // Get media from user's microphone
+    async function getUserMedia() {
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        localAudio.srcObject = localStream;
+      } catch (error) {
+        console.error('Error accessing microphone', error);
+      }
+    }
+
+    // Set up WebRTC connection
+    async function startCall() {
+      await getUserMedia();
+
+      peerConnection = new RTCPeerConnection();
+
+      // Add local stream to the connection
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
+
+      // Set up event listener for incoming tracks (from remote peer)
+      peerConnection.ontrack = event => {
+        remoteStream = event.streams[0];
+        remoteAudio.srcObject = remoteStream;
+      };
+
+      // Assume remote offer comes from a signaling server
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      // Send the offer to the remote peer (via signaling server)
+      // In a real application, you'll use WebSocket or similar to send offer
+      console.log('Offer created:', offer);
+    }
+
+    startCallButton.addEventListener('click', startCall);
+  </script>
+</body>
+</html>

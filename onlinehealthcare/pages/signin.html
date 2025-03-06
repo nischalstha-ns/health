@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Registration Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f7f7f7;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            font-size: 12px;
+            display: none;
+        }
+
+        .forgot-password {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .forgot-password a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .icon {
+            margin-bottom: 20px;
+        }
+
+        .icon i {
+            font-size: 50px;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Form -->
+    <div class="form-container" id="loginFormContainer">
+        <div class="icon">
+            <i class="fas fa-user-circle"></i>
+        </div>
+        <h2>Login</h2>
+        <form id="loginForm" onsubmit="return validateLoginForm()">
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Enter username" required>
+                <span id="username-error" class="error"></span>
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+                <span id="password-error" class="error"></span>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div class="forgot-password">
+            <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
+        </div>
+        <div class="forgot-password">
+            <p>Don't have an account? <a href="#" onclick="showRegistrationForm()">Register here</a></p>
+        </div>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="form-container" id="registrationFormContainer" style="display: none;">
+        <div class="icon">
+            <i class="fas fa-user-plus"></i>
+        </div>
+        <h2>Register</h2>
+        <form id="registrationForm" onsubmit="return validateRegistrationForm()">
+            <div class="input-group">
+                <label for="reg-username">Username:</label>
+                <input type="text" id="reg-username" name="reg-username" placeholder="Enter username" required>
+                <span id="reg-username-error" class="error"></span>
+            </div>
+            <div class="input-group">
+                <label for="reg-email">Email:</label>
+                <input type="email" id="reg-email" name="reg-email" placeholder="Enter email" required>
+                <span id="reg-email-error" class="error"></span>
+            </div>
+            <div class="input-group">
+                <label for="reg-password">Password:</label>
+                <input type="password" id="reg-password" name="reg-password" placeholder="Enter password" required>
+                <span id="reg-password-error" class="error"></span>
+            </div>
+            <div class="input-group">
+                <label for="reg-confirm-password">Confirm Password:</label>
+                <input type="password" id="reg-confirm-password" name="reg-confirm-password" placeholder="Confirm password" required>
+                <span id="reg-confirm-password-error" class="error"></span>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <div class="forgot-password">
+            <p>Already have an account? <a href="#" onclick="showLoginForm()">Login here</a></p>
+        </div>
+    </div>
+
+    <!-- Forgot Password Form -->
+    <div class="form-container" id="forgotPasswordFormContainer" style="display: none;">
+        <div class="icon">
+            <i class="fas fa-key"></i>
+        </div>
+        <h2>Forgot Password</h2>
+        <form id="forgotPasswordForm" onsubmit="return validateForgotPasswordForm()">
+            <div class="input-group">
+                <label for="forgot-email">Email:</label>
+                <input type="email" id="forgot-email" name="forgot-email" placeholder="Enter your email" required>
+                <span id="forgot-email-error" class="error"></span>
+            </div>
+            <button type="submit">Reset Password</button>
+        </form>
+        <div class="forgot-password">
+            <p>Remember your password? <a href="#" onclick="showLoginForm()">Login here</a></p>
+        </div>
+    </div>
+
+    <script>
+        function validateLoginForm() {
+            let username = document.getElementById('username').value;
+            let password = document.getElementById('password').value;
+
+            document.getElementById('username-error').style.display = 'none';
+            document.getElementById('password-error').style.display = 'none';
+
+            let isValid = true;
+
+            if (username.trim() === '') {
+                document.getElementById('username-error').innerText = 'Username is required';
+                document.getElementById('username-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (password.trim() === '') {
+                document.getElementById('password-error').innerText = 'Password is required';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function validateRegistrationForm() {
+            let username = document.getElementById('reg-username').value;
+            let email = document.getElementById('reg-email').value;
+            let password = document.getElementById('reg-password').value;
+            let confirmPassword = document.getElementById('reg-confirm-password').value;
+
+            document.getElementById('reg-username-error').style.display = 'none';
+            document.getElementById('reg-email-error').style.display = 'none';
+            document.getElementById('reg-password-error').style.display = 'none';
+            document.getElementById('reg-confirm-password-error').style.display = 'none';
+
+            let isValid = true;
+
+            if (username.trim() === '') {
+                document.getElementById('reg-username-error').innerText = 'Username is required';
+                document.getElementById('reg-username-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (email.trim() === '') {
+                document.getElementById('reg-email-error').innerText = 'Email is required';
+                document.getElementById('reg-email-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (password.trim() === '') {
+                document.getElementById('reg-password-error').innerText = 'Password is required';
+                document.getElementById('reg-password-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (confirmPassword.trim() === '') {
+                document.getElementById('reg-confirm-password-error').innerText = 'Confirm Password is required';
+                document.getElementById('reg-confirm-password-error').style.display = 'block';
+                isValid = false;
+            }
+
+            if (password !== confirmPassword) {
+                document.getElementById('reg-confirm-password-error').innerText = 'Passwords do not match';
+                document.getElementById('reg-confirm-password-error').style.display = 'block';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function validateForgotPasswordForm() {
+            let email = document.getElementById('forgot-email').value;
+
+            document.getElementById('forgot-email-error').style.display = 'none';
+
+            let isValid = true;
+
+            if (email.trim() === '') {
+                document.getElementById('forgot-email-error').innerText = 'Email is required';
+                document.getElementById('forgot-email-error').style.display = 'block';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function showRegistrationForm() {
+            document.getElementById('loginFormContainer').style.display = 'none';
+            document.getElementById('registrationFormContainer').style.display = 'block';
+            document.getElementById('forgotPasswordFormContainer').style.display = 'none';
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginFormContainer').style.display = 'block';
+            document.getElementById('registrationFormContainer').style.display = 'none';
+            document.getElementById('forgotPasswordFormContainer').style.display = 'none';
+        }
+
+        function showForgotPassword() {
+            document.getElementById('loginFormContainer').style.display = 'none';
+            document.getElementById('registrationFormContainer').style.display = 'none';
+            document.getElementById('forgotPasswordFormContainer').style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
